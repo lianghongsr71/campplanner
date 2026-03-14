@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — Summer Camp Finder</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; max-width: 800px; margin: 0 auto; padding: 1rem 1.5rem; background: #f0f2f5; }
+    .nav { margin-bottom: 1.5rem; padding: 0.5rem 0; border-bottom: 1px solid #ddd; }
+    .nav a { margin-right: 1rem; color: #1a5f4a; text-decoration: none; font-weight: 500; }
+    .nav a:hover { text-decoration: underline; }
+    .nav a.active { text-decoration: underline; }
+    h1 { color: #1a5f4a; margin-top: 0; }
+    .auth-bar { background: #fff; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .auth-bar input { padding: 0.35rem 0.6rem; border: 1px solid #ccc; border-radius: 6px; width: 200px; }
+    .auth-bar button { padding: 0.35rem 0.75rem; background: #1a5f4a; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+    .form-card { background: #fff; padding: 1.25rem; border-radius: 8px; margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .form-card h2 { margin: 0 0 1rem 0; font-size: 1.1rem; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem 1rem; }
+    .form-grid .full { grid-column: 1 / -1; }
+    label { display: block; font-size: 0.9rem; font-weight: 500; margin-bottom: 0.2rem; }
+    input, textarea, select { width: 100%; padding: 0.4rem 0.5rem; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; }
+    textarea { min-height: 80px; resize: vertical; }
+    .actions { margin-top: 1rem; display: flex; gap: 0.5rem; }
+    .btn { padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.95rem; border: none; }
+    .btn-primary { background: #1a5f4a; color: #fff; }
+    .btn-secondary { background: #e0e0e0; color: #333; }
+    .btn-danger { background: #c00; color: #fff; }
+    .list-card { background: #fff; padding: 1rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .camp-row { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #eee; }
+    .camp-row:last-child { border-bottom: none; }
+    .camp-row .btns { display: flex; gap: 0.35rem; }
+    .msg { padding: 0.5rem; border-radius: 6px; margin-bottom: 0.5rem; }
+    .msg.ok { background: #d4edda; color: #155724; }
+    .msg.err { background: #f8d7da; color: #721c24; }
+    .hidden { display: none; }
+    @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a href="home-page.html">Home</a>
+    <a href="my-summer-plan.html">My Summer Plan</a>
+    <a href="admin-dashboard.html" class="active">Admin Dashboard</a>
+  </nav>
+
+  <h1>Admin Dashboard</h1>
+  <div class="auth-bar">
+    <label>Admin key:</label>
+    <input type="password" id="adminKey" placeholder="ADMIN_API_KEY" />
+    <button type="button" id="saveKey">Save</button>
+    <span id="keySaved" style="font-size:0.85rem;color:#666;"></span>
+  </div>
+
+  <div class="form-card">
+    <h2 id="formTitle">Add camp</h2>
+    <div id="formMsg" class="msg hidden"></div>
+    <form id="campForm">
+      <input type="hidden" id="campId" />
+      <div class="form-grid">
+        <div class="full"><label>Camp name *</label><input type="text" id="name" required /></div>
+        <div><label>Organization</label><input type="text" id="organization" /></div>
+        <div><label>Category</label><input type="text" id="category" placeholder="e.g. sports, swimming" /></div>
+        <div><label>Min age *</label><input type="number" id="age_min" min="0" required /></div>
+        <div><label>Max age *</label><input type="number" id="age_max" min="0" required /></div>
+        <div><label>Start date</label><input type="date" id="start_date" /></div>
+        <div><label>End date</label><input type="date" id="end_date" /></div>
+        <div><label>Time start</label><input type="text" id="time_start" placeholder="09:00 AM" /></div>
+        <div><label>Time end</label><input type="text" id="time_end" placeholder="04:00 PM" /></div>
+        <div><label>Price (CAD) *</label><input type="number" id="price" min="0" step="0.01" required /></div>
+        <div><label>Days of week</label><input type="text" id="days_of_week" placeholder="Mon;Tue;Wed" /></div>
+        <div class="full"><label>Address *</label><input type="text" id="address" required /></div>
+        <div><label>Latitude</label><input type="number" id="latitude" step="any" /></div>
+        <div><label>Longitude</label><input type="number" id="longitude" step="any" /></div>
+        <div class="full"><label>Image URL or color</label><input type="text" id="image_url" placeholder="https://... or #ea580c (hex for placeholder)" /></div>
+        <div><label>Tag</label><select id="tag"><option value="">None</option><option value="popular">Popular</option><option value="new">New</option><option value="favourite">Favourite</option></select></div>
+        <div class="full"><label>Registration link</label><input type="url" id="registration_link" /></div>
+        <div class="full"><label>Description</label><textarea id="description"></textarea></div>
+      </div>
+      <div class="actions">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" id="cancelEdit" class="btn btn-secondary hidden">Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="list-card">
+    <h2>Existing camps</h2>
+    <div id="campList">Loading…</div>
+  </div>
+
+  <script>
+    var API_BASE = window.location.protocol + '//' + window.location.hostname + ':8000';
+    var KEY_STORAGE = 'summer_camp_admin_key';
+    function getAdminKey() { return sessionStorage.getItem(KEY_STORAGE) || document.getElementById('adminKey').value || ''; }
+    document.getElementById('saveKey').onclick = function () {
+      var k = document.getElementById('adminKey').value.trim();
+      if (k) { sessionStorage.setItem(KEY_STORAGE, k); document.getElementById('keySaved').textContent = 'Saved (this session)'; }
+    };
+    function showMsg(el, text, isErr) { el.textContent = text; el.className = 'msg ' + (isErr ? 'err' : 'ok'); el.classList.remove('hidden'); }
+    function hideMsg(el) { el.classList.add('hidden'); }
+    function getFormData() {
+      var num = function (id) { var v = document.getElementById(id).value; return v === '' ? null : parseFloat(v); };
+      return {
+        name: document.getElementById('name').value.trim(),
+        organization: document.getElementById('organization').value.trim() || null,
+        age_min: parseInt(document.getElementById('age_min').value, 10),
+        age_max: parseInt(document.getElementById('age_max').value, 10),
+        start_date: document.getElementById('start_date').value || null,
+        end_date: document.getElementById('end_date').value || null,
+        time_start: document.getElementById('time_start').value.trim() || null,
+        time_end: document.getElementById('time_end').value.trim() || null,
+        price: parseFloat(document.getElementById('price').value, 10),
+        category: document.getElementById('category').value.trim() || null,
+        address: document.getElementById('address').value.trim(),
+        latitude: num('latitude'),
+        longitude: num('longitude'),
+        registration_link: document.getElementById('registration_link').value.trim() || null,
+        days_of_week: document.getElementById('days_of_week').value.trim() || null,
+        description: document.getElementById('description').value.trim() || null,
+        image_url: document.getElementById('image_url').value.trim() || null,
+        tag: document.getElementById('tag').value.trim() || null
+      };
+    }
+    function setFormData(camp) {
+      document.getElementById('campId').value = camp.id || '';
+      ['name','organization','category','age_min','age_max','start_date','end_date','time_start','time_end','price','days_of_week','address','latitude','longitude','image_url','tag','registration_link','description'].forEach(function (k) {
+        var v = camp[k];
+        if (v !== undefined && v !== null) document.getElementById(k).value = v;
+      });
+    }
+    function clearForm() {
+      document.getElementById('campForm').reset();
+      document.getElementById('campId').value = '';
+      document.getElementById('formTitle').textContent = 'Add camp';
+      document.getElementById('cancelEdit').classList.add('hidden');
+      hideMsg(document.getElementById('formMsg'));
+    }
+    function fetchApi(method, url, body) {
+      var opts = { method: method, headers: { 'Content-Type': 'application/json' } };
+      if (getAdminKey()) opts.headers['X-Admin-Key'] = getAdminKey();
+      if (body) opts.body = JSON.stringify(body);
+      return fetch(url, opts);
+    }
+    document.getElementById('campForm').onsubmit = function (e) {
+      e.preventDefault();
+      var msgEl = document.getElementById('formMsg');
+      var id = document.getElementById('campId').value;
+      var url = id ? API_BASE + '/camps/' + id : API_BASE + '/camps';
+      var method = id ? 'PUT' : 'POST';
+      fetchApi(method, url, getFormData())
+        .then(function (res) {
+          if (res.status === 401) { sessionStorage.removeItem(KEY_STORAGE); showMsg(msgEl, 'Invalid admin key.', true); return; }
+          if (!res.ok) return res.json().then(function (j) { throw new Error(j.detail || res.statusText); });
+          return res.json();
+        })
+        .then(function (camp) { if (camp) { showMsg(msgEl, id ? 'Updated.' : 'Added.', false); clearForm(); loadList(); } })
+        .catch(function (err) { showMsg(msgEl, err.message || 'Request failed', true); });
+    };
+    document.getElementById('cancelEdit').onclick = clearForm;
+    function loadList() {
+      var el = document.getElementById('campList');
+      fetch(API_BASE + '/camps').then(function (r) { return r.json(); })
+        .then(function (camps) {
+          if (camps.length === 0) { el.innerHTML = '<p style="color:#666;">No camps. Add one above.</p>'; return; }
+          el.innerHTML = camps.map(function (c) {
+            var price = typeof c.price === 'number' ? c.price : parseFloat(c.price);
+            return '<div class="camp-row"><span><strong>' + (c.name || '').replace(/</g,'&lt;') + '</strong> · Ages ' + c.age_min + '–' + c.age_max + ' · $' + price + ' CAD</span><div class="btns"><button type="button" class="btn btn-secondary" data-id="' + c.id + '" data-action="edit">Edit</button><button type="button" class="btn btn-danger" data-id="' + c.id + '" data-action="delete">Delete</button></div></div>';
+          }).join('');
+          el.querySelectorAll('[data-action=edit]').forEach(function (btn) {
+            btn.onclick = function () {
+              fetch(API_BASE + '/camps/' + btn.getAttribute('data-id')).then(function (r) { return r.json(); })
+                .then(function (camp) { setFormData(camp); document.getElementById('formTitle').textContent = 'Edit camp'; document.getElementById('cancelEdit').classList.remove('hidden'); });
+            };
+          });
+          el.querySelectorAll('[data-action=delete]').forEach(function (btn) {
+            btn.onclick = function () {
+              if (!confirm('Delete this camp?')) return;
+              fetchApi('DELETE', API_BASE + '/camps/' + btn.getAttribute('data-id'))
+                .then(function (res) { if (res.status === 401) { alert('Set admin key first'); return; } if (!res.ok) throw new Error(); loadList(); })
+                .catch(function () { alert('Delete failed'); });
+            };
+          });
+        })
+        .catch(function () { el.innerHTML = '<p class="err">Failed to load. Is the API running?</p>'; });
+    }
+    loadList();
+  </script>
+</body>
+</html>

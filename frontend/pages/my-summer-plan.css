@@ -1,0 +1,488 @@
+/* My Summer Plan — schedule page, light theme */
+
+.plan-page {
+    background: #eef1f5;
+    color: #1e293b;
+  }
+  
+  .plan-page::before {
+    display: none;
+  }
+  
+  /* Header: white bar, My Summer Plan active */
+  .plan-page .header {
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+  
+  .plan-page .logo {
+    color: #1e3a5f;
+  }
+  
+  .plan-page .logo-icon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+  }
+  
+  .plan-page .logo-icon {
+    color: var(--accent);
+  }
+  
+  .plan-page .logo-sub {
+    color: #64748b;
+    opacity: 1;
+  }
+  
+  .plan-page .nav-link {
+    color: #475569;
+  }
+  
+  .plan-page .nav-link:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+  }
+  
+  .plan-page .nav-link.active {
+    background: var(--accent);
+    color: #fff;
+    border-bottom: 2px solid #1d4ed8;
+  }
+  
+  .plan-page .btn-header {
+    background: #1e3a5f;
+    color: #fff;
+    text-decoration: none;
+  }
+  
+  .plan-page .btn-header:hover {
+    background: #16325a;
+  }
+  
+  /* Main layout: content + sidebar */
+  .plan-main {
+    position: relative;
+    z-index: 1;
+    padding: 2rem 1.5rem 4rem;
+  }
+  
+  .plan-layout {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 2rem;
+    align-items: start;
+  }
+  
+  @media (max-width: 900px) {
+    .plan-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  /* Left column: title + schedule */
+  .plan-content {
+    min-width: 0;
+  }
+  
+  .plan-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .plan-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 0.25rem;
+  }
+  
+  .plan-subtitle {
+    font-size: 0.95rem;
+    color: #64748b;
+    margin: 0;
+  }
+  
+  .plan-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .btn-plan {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+  
+  .btn-plan:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+  }
+  
+  .btn-plan svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  /* Weekly Schedule section */
+  .schedule-section {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .schedule-heading {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 1rem;
+  }
+  
+  .schedule-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .schedule-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.75rem;
+    background: transparent;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .schedule-nav-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .schedule-prev:hover {
+    background: #f8fafc;
+    color: #475569;
+  }
+  
+  .schedule-next-active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  
+  .schedule-next-active:hover {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+  }
+  
+  .schedule-daterange {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #334155;
+  }
+  
+  /* Schedule grid table */
+  .schedule-grid-wrap {
+    overflow-x: auto;
+  }
+  
+  .schedule-grid {
+    width: 100%;
+    min-width: 560px;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  
+  .schedule-grid th,
+  .schedule-grid td {
+    border: 1px solid #e2e8f0;
+    vertical-align: top;
+  }
+  
+  .schedule-grid thead th {
+    padding: 0.6rem 0.5rem;
+    text-align: center;
+    font-weight: 600;
+    color: #475569;
+    background: #f8fafc;
+    line-height: 1.3;
+  }
+  
+  .schedule-time-col {
+    width: 52px;
+    min-width: 52px;
+    background: #f8fafc !important;
+  }
+  
+  .schedule-date {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #64748b;
+    margin-top: 0.15rem;
+  }
+  
+  .schedule-grid tbody td {
+    padding: 0;
+    height: 48px;
+    min-height: 48px;
+  }
+  
+  .schedule-time {
+    padding: 0 0.5rem !important;
+    font-size: 0.8rem;
+    color: #64748b;
+    text-align: right;
+    width: 52px;
+    background: #fafbfc !important;
+  }
+  
+  .schedule-cell-block {
+    padding: 2px !important;
+    height: auto;
+    vertical-align: top;
+  }
+  
+  .schedule-block {
+    height: 100%;
+    min-height: 94px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.2;
+  }
+  
+  .schedule-block-blue {
+    background: #dbeafe;
+    border: 1px solid #93c5fd;
+    color: #1e40af;
+  }
+  
+  /* Right sidebar: cards */
+  .plan-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .plan-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+  }
+  
+  .plan-card-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  
+  .plan-card-head-toggle {
+    cursor: pointer;
+  }
+  
+  .plan-card-title {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1e293b;
+  }
+  
+  .plan-card-icon {
+    width: 20px;
+    height: 20px;
+    color: #64748b;
+  }
+  
+  .plan-card-total {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-right: 0.25rem;
+  }
+  
+  .plan-card-chevron {
+    width: 18px;
+    height: 18px;
+    color: #94a3b8;
+  }
+  
+  .plan-card-body {
+    padding: 1rem 1.25rem;
+  }
+  
+  /* Cost calculator rows */
+  .cost-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.6rem;
+  }
+  
+  .cost-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  
+  .cost-dot-blue {
+    background: #2563eb;
+  }
+  
+  .cost-dot-green {
+    background: #22c55e;
+  }
+  
+  .cost-label {
+    flex: 1;
+    font-size: 0.9rem;
+    color: #334155;
+  }
+  
+  .cost-value {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #1e293b;
+  }
+  
+  .cost-total-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e2e8f0;
+  }
+  
+  .cost-total-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #475569;
+  }
+  
+  .cost-total-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  
+  .cost-note {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin: 0.5rem 0 0;
+  }
+  
+  /* Camp Legend */
+  .legend-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #334155;
+    margin-bottom: 0.5rem;
+  }
+  
+  .legend-row:last-child {
+    margin-bottom: 0;
+  }
+  
+  /* Success message card */
+  .plan-card-success {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+    padding: 1.25rem;
+    background: #dcfce7;
+    border-color: #86efac;
+  }
+  
+  .plan-card-success-icon {
+    width: 24px;
+    height: 24px;
+    color: #16a34a;
+  }
+  
+  .plan-card-success-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #166534;
+    margin: 0;
+  }
+  
+  .plan-card-success-text {
+    font-size: 0.85rem;
+    color: #15803d;
+    margin: 0;
+  }
+  
+  /* Quick Actions */
+  .quick-action {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--accent);
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  
+  .quick-action:hover {
+    color: var(--accent-hover);
+    text-decoration: underline;
+  }
+  
+  .quick-action svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .plan-card-body .quick-action + .quick-action {
+    margin-top: 0.25rem;
+  }
+  

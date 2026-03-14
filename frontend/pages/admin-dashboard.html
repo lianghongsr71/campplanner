@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — SummerFind ST. JOHN'S</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body class="admin-page">
+  <!-- Header -->
+  <header class="header">
+    <a href="index.html" class="logo">
+      <span class="logo-icon-wrap"><svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L12 8M12 8C9 8 7 10 7 12.5C7 15 9 17 12 17C15 17 17 15 17 12.5C17 10 15 8 12 8Z"/><circle cx="12" cy="12" r="10"/></svg></span>
+      <span class="logo-text">SummerFind <span class="logo-sub">ST. JOHN'S</span></span>
+    </a>
+    <nav class="nav">
+      <a href="index.html" class="nav-link">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        Find Camps
+      </a>
+      <a href="#" class="nav-link">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        My Summer Plan
+      </a>
+      <a href="admin.html" class="nav-link active">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        Admin
+      </a>
+    </nav>
+    <a href="index.html" class="btn-header">
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      Search Camps
+    </a>
+  </header>
+
+  <main class="admin-main">
+    <div class="admin-wrap">
+      <!-- Dashboard header -->
+      <div class="dashboard-head">
+        <div>
+          <h1 class="dashboard-title">Admin Dashboard</h1>
+          <p class="dashboard-subtitle">Manage summer camp listings for St. John's</p>
+        </div>
+        <button type="button" class="btn-add-camp">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Add New Camp
+        </button>
+      </div>
+
+      <!-- Summary cards -->
+      <div class="stat-cards">
+        <div class="stat-card">
+          <div class="stat-card-icon stat-icon-blue">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10h16v10H4z"/><path d="M4 10l4-6 4 4 4-4 4 6"/></svg>
+          </div>
+          <div class="stat-card-content">
+            <span class="stat-card-value">4</span>
+            <span class="stat-card-label">Total Camps</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon stat-icon-purple">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          </div>
+          <div class="stat-card-content">
+            <span class="stat-card-value">4</span>
+            <span class="stat-card-label">Categories</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon stat-icon-green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          </div>
+          <div class="stat-card-content">
+            <span class="stat-card-value">$310</span>
+            <span class="stat-card-label">Avg. Price</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon stat-icon-orange">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+          </div>
+          <div class="stat-card-content">
+            <span class="stat-card-value">4-16</span>
+            <span class="stat-card-label">Age Range</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- All Camps table -->
+      <div class="table-card">
+        <div class="table-card-head">
+          <svg class="table-head-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          <h2 class="table-card-title">All Camps (4)</h2>
+        </div>
+        <div class="table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>CAMP NAME</th>
+                <th>ORGANIZATION</th>
+                <th>AGES</th>
+                <th>DATES</th>
+                <th>PRICE</th>
+                <th>CATEGORY</th>
+                <th>ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Summer Sports Academy</strong></td>
+                <td>St. John's Recreation</td>
+                <td>7-14</td>
+                <td>Jul 06, 2026</td>
+                <td><strong>$325</strong></td>
+                <td><span class="category-badge">Sports</span></td>
+                <td>
+                  <div class="action-btns">
+                    <button type="button" class="action-btn action-edit" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button type="button" class="action-btn action-delete" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></button>
+                    <button type="button" class="action-btn action-view" title="View"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Fun on the Water Youth Camp</strong></td>
+                <td>City of St. John's Recreation</td>
+                <td>12-15</td>
+                <td>Jul 13, 2026</td>
+                <td><strong>$160</strong></td>
+                <td><span class="category-badge">Outdoor</span></td>
+                <td>
+                  <div class="action-btns">
+                    <button type="button" class="action-btn action-edit" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button type="button" class="action-btn action-delete" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></button>
+                    <button type="button" class="action-btn action-view" title="View"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>St. John's Legends Summer Swim Camp</strong></td>
+                <td>St. John's Legends Swim Club</td>
+                <td>5-12</td>
+                <td>Jul 06, 2026</td>
+                <td><strong>$200</strong></td>
+                <td><span class="category-badge">Swimming</span></td>
+                <td>
+                  <div class="action-btns">
+                    <button type="button" class="action-btn action-edit" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button type="button" class="action-btn action-delete" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></button>
+                    <button type="button" class="action-btn action-view" title="View"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Arts & Nature Discovery Camp</strong></td>
+                <td>St. John's Recreation</td>
+                <td>4-10</td>
+                <td>Aug 03, 2026</td>
+                <td><strong>$275</strong></td>
+                <td><span class="category-badge">Arts & Crafts</span></td>
+                <td>
+                  <div class="action-btns">
+                    <button type="button" class="action-btn action-edit" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button type="button" class="action-btn action-delete" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></button>
+                    <button type="button" class="action-btn action-view" title="View"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

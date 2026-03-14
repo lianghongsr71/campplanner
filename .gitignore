@@ -1,0 +1,15 @@
+# database
+postgres/
+database/postgres/
+
+# node
+node_modules/
+
+# env
+.env
+
+# logs
+*.log
+
+# docker volumes
+data/

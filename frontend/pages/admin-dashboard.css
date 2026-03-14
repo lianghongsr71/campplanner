@@ -1,0 +1,342 @@
+/* Admin Dashboard — light theme, dashboard layout */
+
+/* Override body for admin: light gray background, no gradient */
+.admin-page {
+    background: #eef1f5;
+    color: #1e293b;
+  }
+  
+  .admin-page::before {
+    display: none;
+  }
+  
+  /* Header on admin: white bar, dark text */
+  .admin-page .header {
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+  
+  .admin-page .logo {
+    color: #1e3a5f;
+  }
+  
+  .admin-page .logo-icon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+  }
+  
+  .admin-page .logo-icon {
+    color: var(--accent);
+  }
+  
+  .admin-page .logo-sub {
+    color: #64748b;
+    opacity: 1;
+  }
+  
+  .admin-page .nav-link {
+    color: #475569;
+  }
+  
+  .admin-page .nav-link:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+  }
+  
+  .admin-page .nav-link.active {
+    background: var(--accent);
+    color: #fff;
+    border-bottom: 2px solid #1d4ed8;
+  }
+  
+  .admin-page .btn-header {
+    background: #1e3a5f;
+    color: #fff;
+    text-decoration: none;
+  }
+  
+  .admin-page .btn-header:hover {
+    background: #16325a;
+  }
+  
+  /* Main content area */
+  .admin-main {
+    position: relative;
+    z-index: 1;
+    padding: 2rem 1.5rem 4rem;
+  }
+  
+  .admin-wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  /* Dashboard header row */
+  .dashboard-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .dashboard-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 0.25rem;
+  }
+  
+  .dashboard-subtitle {
+    font-size: 0.95rem;
+    color: #64748b;
+    margin: 0;
+  }
+  
+  .btn-add-camp {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.25rem;
+    background: #1e3a5f;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .btn-add-camp:hover {
+    background: #16325a;
+  }
+  
+  .btn-add-camp svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  /* Summary stat cards */
+  .stat-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+  }
+  
+  @media (max-width: 900px) {
+    .stat-cards {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .stat-cards {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .stat-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+  
+  .stat-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  
+  .stat-card-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .stat-icon-blue {
+    background: #dbeafe;
+    color: #2563eb;
+  }
+  
+  .stat-icon-purple {
+    background: #ede9fe;
+    color: #7c3aed;
+  }
+  
+  .stat-icon-green {
+    background: #dcfce7;
+    color: #22c55e;
+  }
+  
+  .stat-icon-orange {
+    background: #ffedd5;
+    color: #ea580c;
+  }
+  
+  .stat-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  
+  .stat-card-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+  }
+  
+  .stat-card-label {
+    font-size: 0.85rem;
+    color: #64748b;
+  }
+  
+  /* Table card container */
+  .table-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+  
+  .table-card-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  
+  .table-head-icon {
+    width: 22px;
+    height: 22px;
+    color: #64748b;
+  }
+  
+  .table-card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+  }
+  
+  .table-wrap {
+    overflow-x: auto;
+  }
+  
+  /* Table */
+  .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  
+  .admin-table th {
+    text-align: left;
+    padding: 0.85rem 1.25rem;
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    text-transform: uppercase;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  
+  .admin-table td {
+    padding: 1rem 1.25rem;
+    color: #334155;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  
+  .admin-table tbody tr:nth-child(even) {
+    background: #fafbfc;
+  }
+  
+  .admin-table tbody tr:hover {
+    background: #f8fafc;
+  }
+  
+  .admin-table td strong {
+    color: #1e293b;
+  }
+  
+  /* Category badge in table */
+  .category-badge {
+    display: inline-block;
+    padding: 0.25rem 0.65rem;
+    background: #f1f5f9;
+    color: #475569;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+  
+  /* Action buttons in table */
+  .action-btns {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  
+  .action-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .action-edit {
+    border-color: #2563eb;
+    color: #2563eb;
+  }
+  
+  .action-edit:hover {
+    background: #dbeafe;
+  }
+  
+  .action-delete {
+    border-color: #dc2626;
+    color: #dc2626;
+  }
+  
+  .action-delete:hover {
+    background: #fee2e2;
+  }
+  
+  .action-view {
+    border-color: #2563eb;
+    color: #2563eb;
+  }
+  
+  .action-view:hover {
+    background: #dbeafe;
+  }
+  

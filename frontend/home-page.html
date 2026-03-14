@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Summer Camp Finder — Home</title>
+  <link rel="stylesheet" href="pages/homepage.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <style>
+    #map-container { margin: 1.25rem 0; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+    #map { height: 280px; background: #e2e8f0; }
+    .loading, .empty { padding: 1.25rem; text-align: center; color: #64748b; border-radius: var(--radius); }
+    .error { padding: 1.25rem; text-align: center; color: #dc2626; background: rgba(220,38,38,0.1); border-radius: var(--radius); }
+    .category-pill[data-category="art"] { border-color: #7c3aed; color: #7c3aed; }
+    .category-pill[data-category="art"].active { background: #7c3aed; border-color: #7c3aed; }
+    .category-pill[data-category="academe"] { border-color: #22c55e; color: #22c55e; }
+    .category-pill[data-category="academe"].active { background: #22c55e; border-color: #22c55e; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <a href="home-page.html" class="logo">
+      <span class="logo-icon" aria-hidden="true">☀️</span>
+      <span>SummerFind <span class="logo-sub">ST. JOHN'S</span></span>
+    </a>
+    <nav class="nav">
+      <a href="home-page.html" class="nav-link active">Home</a>
+      <a href="my-summer-plan.html" class="nav-link">My Summer Plan</a>
+      <a href="admin-dashboard.html" class="nav-link">Admin</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <p class="hero-badge">
+      <span class="badge-icon" aria-hidden="true">📍</span>
+      St. John's, NL · 2026
+    </p>
+    <h1 class="hero-title">Find the best summer camps for your kids</h1>
+    <p class="hero-subtitle">Search by keyword, age, or category. Top-rated camps in St. John's for 2026.</p>
+
+    <div class="search-card">
+      <div class="search-row">
+        <div class="search-field">
+          <label class="field-label" for="keyword">
+            <span class="field-icon" aria-hidden="true">🔍</span>
+            Keyword
+          </label>
+          <input type="text" id="keyword" class="input" placeholder="e.g. sports, swimming, address…" />
+        </div>
+        <div class="search-field">
+          <label class="field-label" for="age">
+            <span class="field-icon" aria-hidden="true">👤</span>
+            Age
+          </label>
+          <select id="age" class="input input-select">
+            <option value="">Any age</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <option value="13">13</option>
+            <option value="14">14</option>
+            <option value="15">15</option>
+            <option value="16">16</option>
+            <option value="17">17</option>
+          </select>
+        </div>
+        <div class="search-field">
+          <label class="field-label" for="category-select">
+            <span class="field-icon" aria-hidden="true">🏷️</span>
+            Category
+          </label>
+          <select id="category-select" class="input input-select">
+            <option value="">All categories</option>
+            <option value="sports">Sports</option>
+            <option value="swimming">Swimming</option>
+            <option value="art">Art & Craft</option>
+            <option value="academe">Academe</option>
+            <option value="music">Music</option>
+            <option value="nature">Nature & Outdoor</option>
+          </select>
+        </div>
+      </div>
+      <button type="button" id="btn-find" class="btn-find">Find camps</button>
+    </div>
+  </section>
+
+  <section class="content-section">
+    <div class="content-wrap">
+      <div class="category-bar">
+        <button type="button" class="category-pill active" data-category="">All</button>
+        <button type="button" class="category-pill" data-category="sports">Sports</button>
+        <button type="button" class="category-pill" data-category="swimming">Swimming</button>
+        <button type="button" class="category-pill" data-category="art">Art & Craft</button>
+        <button type="button" class="category-pill" data-category="academe">Academe</button>
+        <button type="button" class="category-pill" data-category="music">Music</button>
+        <button type="button" class="category-pill" data-category="nature">Nature & Outdoor</button>
+      </div>
+
+      <div class="featured-head">
+        <div>
+          <h2 class="featured-title">Featured Camps</h2>
+          <p class="featured-subtitle">Top-rated summer camps in St. John's for 2026</p>
+        </div>
+      </div>
+
+      <div id="map-container">
+        <div id="map"></div>
+      </div>
+
+      <div id="result">
+        <div class="loading">Loading camps…</div>
+      </div>
+    </div>
+  </section>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    var API_BASE = window.location.protocol + '//' + window.location.hostname + ':8000';
+    var map, markersLayer;
+
+    function getSearchParams() {
+      return {
+        keyword: document.getElementById('keyword').value.trim(),
+        age: document.getElementById('age').value.trim(),
+        category: document.getElementById('category-select').value.trim()
+      };
+    }
+
+    function initMap() {
+      if (map) return;
+      map = L.map('map').setView([47.57, -52.71], 12);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' }).addTo(map);
+      markersLayer = L.layerGroup().addTo(map);
+    }
+    function updateMapMarkers(camps) {
+      initMap();
+      markersLayer.clearLayers();
+      var withCoords = camps.filter(function (c) {
+        var lat = c.latitude != null ? parseFloat(c.latitude) : NaN;
+        var lng = c.longitude != null ? parseFloat(c.longitude) : NaN;
+        return !isNaN(lat) && !isNaN(lng);
+      });
+      if (withCoords.length === 0) return;
+      var bounds = L.latLngBounds();
+      withCoords.forEach(function (c) {
+        var lat = parseFloat(c.latitude), lng = parseFloat(c.longitude);
+        var price = typeof c.price === 'number' ? c.price : parseFloat(c.price);
+        var popup = '<strong>' + escapeHtml(c.name) + '</strong><br>' + escapeHtml(c.address || '') + '<br>$' + price.toFixed(0) + ' CAD';
+        var marker = L.marker([lat, lng]).addTo(markersLayer);
+        marker.bindPopup(popup);
+        bounds.extend([lat, lng]);
+      });
+      map.fitBounds(bounds, { padding: [30, 30], maxZoom: 14 });
+    }
+    function escapeHtml(s) {
+      if (s == null) return '';
+      var d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+    function campImageStyle(c, index) {
+      var url = c.image_url ? (c.image_url + '').trim() : '';
+      if (url && url.indexOf('#') === 0) return 'background-color:' + escapeHtml(url) + ';';
+      if (url && url.indexOf('http') === 0) return 'background-image:url(' + escapeHtml(url) + ');';
+      var cls = (index % 3) + 1;
+      return ''; /* use class camp-img-1/2/3 */
+    }
+    function campImageClass(c, index) {
+      var url = c.image_url ? (c.image_url + '').trim() : '';
+      if (url && (url.indexOf('#') === 0 || url.indexOf('http') === 0)) return 'camp-image';
+      return 'camp-image camp-img-' + ((index % 3) + 1);
+    }
+    function tagLabel(tag) {
+      if (!tag) return '';
+      var t = (tag + '').toLowerCase();
+      if (t === 'popular') return 'Popular';
+      if (t === 'new') return 'New';
+      if (t === 'favourite') return 'Favourite';
+      return tag;
+    }
+    function renderCamps(camps) {
+      var el = document.getElementById('result');
+      if (camps.length === 0) {
+        el.innerHTML = '<div class="empty">No camps match your search or category.</div>';
+        updateMapMarkers([]);
+        return;
+      }
+      el.innerHTML = '<div class="camp-grid">' + camps.map(function (c, i) {
+        var price = typeof c.price === 'number' ? c.price : parseFloat(c.price);
+        var priceStr = '$' + price.toFixed(0);
+        var imgStyle = campImageStyle(c, i);
+        var imgCls = campImageClass(c, i);
+        var tag = c.tag ? (c.tag + '').trim().toLowerCase() : '';
+        var tagHtml = tag ? '<span class="camp-tag tag-' + escapeHtml(tag) + '">' + escapeHtml(tagLabel(c.tag)) + '</span>' : '';
+        var meta = [];
+        if (c.start_date && c.end_date) meta.push('<li>' + escapeHtml(c.start_date) + ' – ' + escapeHtml(c.end_date) + '</li>');
+        meta.push('<li>Ages ' + c.age_min + '–' + c.age_max + '</li>');
+        if (c.address) meta.push('<li>' + escapeHtml(c.address) + '</li>');
+        var learnHref = (c.registration_link && c.registration_link.trim()) ? c.registration_link : '#';
+        var learnTarget = learnHref.indexOf('http') === 0 ? ' target="_blank" rel="noopener"' : '';
+        return '<article class="camp-card">' +
+          '<div class="' + imgCls + '" style="' + imgStyle + '">' + tagHtml + '</div>' +
+          '<div class="camp-body">' +
+            '<h3 class="camp-name">' + escapeHtml(c.name) + '</h3>' +
+            (c.organization ? '<p class="camp-org">' + escapeHtml(c.organization) + '</p>' : '') +
+            '<ul class="camp-meta">' + meta.join('') + '</ul>' +
+            '<p class="camp-price"><strong>' + priceStr + '</strong> <span>CAD</span></p>' +
+            '<a href="' + escapeHtml(learnHref) + '" class="btn-learn"' + learnTarget + '>Learn more</a>' +
+          '</div></article>';
+      }).join('') + '</div>';
+      updateMapMarkers(camps);
+    }
+    function loadCamps() {
+      var p = getSearchParams();
+      var params = new URLSearchParams();
+      if (p.keyword) params.set('q', p.keyword);
+      if (p.age) params.set('age', p.age);
+      if (p.category) params.set('category', p.category);
+      var url = API_BASE + '/camps' + (params.toString() ? '?' + params.toString() : '');
+      fetch(url)
+        .then(function (res) { if (!res.ok) throw new Error('Failed to load camps'); return res.json(); })
+        .then(renderCamps)
+        .catch(function (err) {
+          document.getElementById('result').innerHTML = '<div class="error">' + escapeHtml(err.message) + '</div>';
+          updateMapMarkers([]);
+        });
+    }
+    document.querySelectorAll('.category-pill').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('.category-pill').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        var cat = (btn.getAttribute('data-category') || '').trim();
+        document.getElementById('category-select').value = cat;
+        loadCamps();
+      });
+    });
+    document.getElementById('category-select').addEventListener('change', function () {
+      var cat = this.value;
+      document.querySelectorAll('.category-pill').forEach(function (b) {
+        b.classList.toggle('active', (b.getAttribute('data-category') || '') === cat);
+      });
+      loadCamps();
+    });
+    document.getElementById('btn-find').addEventListener('click', loadCamps);
+    document.getElementById('keyword').addEventListener('input', function () {
+      clearTimeout(window._searchT);
+      window._searchT = setTimeout(loadCamps, 300);
+    });
+    document.getElementById('keyword').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') loadCamps();
+    });
+    document.getElementById('age').addEventListener('change', loadCamps);
+    loadCamps();
+  </script>
+</body>
+</html>
