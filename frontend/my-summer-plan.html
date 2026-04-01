@@ -1,187 +1,430 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Summer Plan — Summer Camp Finder</title>
-  <style>
-    * { box-sizing: border-box; }
-    body { font-family: system-ui, -apple-system, sans-serif; max-width: 900px; margin: 0 auto; padding: 1rem 1.5rem; background: #f5f5f5; }
-    .nav { margin-bottom: 1.5rem; padding: 0.5rem 0; border-bottom: 1px solid #ddd; }
-    .nav a { margin-right: 1rem; color: #1a5f4a; text-decoration: none; font-weight: 500; }
-    .nav a:hover { text-decoration: underline; }
-    .nav a.active { text-decoration: underline; }
-    h1 { color: #1a5f4a; margin-top: 0; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
-    .count-badge { background: #1a5f4a; color: #fff; border-radius: 999px; font-size: 0.85rem; padding: 0.15rem 0.6rem; font-weight: 600; }
-    .subtitle { color: #666; margin: -0.5rem 0 1.5rem; font-size: 0.95rem; }
-
-    /* Empty state */
-    .empty-state { background: #fff; border-radius: 10px; padding: 3rem 2rem; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-    .empty-state .icon { font-size: 3rem; margin-bottom: 0.75rem; }
-    .empty-state h2 { color: #1a5f4a; margin: 0 0 0.5rem; }
-    .empty-state p { color: #666; margin: 0 0 1.25rem; }
-    .btn-browse { display: inline-block; background: #1a5f4a; color: #fff; text-decoration: none; padding: 0.6rem 1.4rem; border-radius: 8px; font-weight: 500; transition: background 0.15s; }
-    .btn-browse:hover { background: #144d3b; }
-
-    /* Camp grid */
-    .camp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.25rem; }
-    .camp-card { background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); display: flex; flex-direction: column; }
-    .camp-image { height: 120px; background: #cbd5e1; position: relative; background-size: cover; background-position: center; }
-    .camp-img-1 { background: linear-gradient(135deg, #0ea5e9, #0369a1); }
-    .camp-img-2 { background: linear-gradient(135deg, #f97316, #ea580c); }
-    .camp-img-3 { background: linear-gradient(135deg, #10b981, #059669); }
-    .camp-tag { position: absolute; top: 0.5rem; left: 0.5rem; padding: 0.2rem 0.55rem; border-radius: 999px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
-    .tag-popular { background: #fbbf24; color: #78350f; }
-    .tag-new { background: #34d399; color: #064e3b; }
-    .tag-favourite { background: #f472b6; color: #831843; }
-    .btn-remove { position: absolute; top: 0.5rem; right: 0.5rem; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 2rem; height: 2rem; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,0.2); transition: transform 0.15s; }
-    .btn-remove:hover { transform: scale(1.15); }
-    .camp-body { padding: 0.9rem 1rem 1rem; flex: 1; display: flex; flex-direction: column; }
-    .camp-name { font-size: 0.95rem; font-weight: 700; margin: 0 0 0.2rem; color: #1e293b; }
-    .camp-org { font-size: 0.8rem; color: #64748b; margin: 0 0 0.5rem; }
-    .camp-meta { list-style: none; padding: 0; margin: 0 0 0.6rem; font-size: 0.8rem; color: #64748b; display: flex; flex-direction: column; gap: 0.15rem; }
-    .camp-price { font-size: 0.9rem; color: #1e293b; margin: auto 0 0.6rem; }
-    .camp-price span { color: #64748b; font-size: 0.8rem; }
-    .btn-learn { display: block; text-align: center; background: #1a5f4a; color: #fff; text-decoration: none; padding: 0.45rem; border-radius: 6px; font-size: 0.85rem; font-weight: 500; transition: background 0.15s; }
-    .btn-learn:hover { background: #144d3b; }
-
-    .loading { padding: 3rem; text-align: center; color: #666; }
-    .error-msg { padding: 1rem; background: #fee2e2; color: #991b1b; border-radius: 8px; margin-bottom: 1rem; }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Summer Plan - SummerFind ST. JOHN'S</title>
+  <link rel="stylesheet" href="pages/homepage.css" />
+  <link rel="stylesheet" href="pages/my-summer-plan.css" />
 </head>
-<body>
-  <nav class="nav">
-    <a href="home-page.html">Home</a>
-    <a href="my-summer-plan.html" class="active">My Summer Plan</a>
-    <a href="admin-dashboard.html">Admin Dashboard</a>
-  </nav>
+<body class="plan-page">
 
-  <h1>My Summer Plan <span id="countBadge" class="count-badge" style="display:none">0</span></h1>
-  <p class="subtitle">Your saved camps — view and plan your summer at a glance.</p>
+  <header class="header">
+    <a href="home-page.html" class="logo">
+      <span class="logo-icon" aria-hidden="true">&#9728;&#65039;</span>
+      <span>SummerFind <span class="logo-sub">ST. JOHN'S</span></span>
+    </a>
+    <nav class="nav">
+      <a href="home-page.html" class="nav-link">Home</a>
+      <a href="my-summer-plan.html" class="nav-link active">My Summer Plan</a>
+      <a href="admin-dashboard.html" class="nav-link">Admin</a>
+    </nav>
+  </header>
 
-  <div id="content"><div class="loading">Loading your saved camps…</div></div>
+  <main class="plan-main">
+    <!-- Empty state -->
+    <div id="emptyState" style="display:none; max-width:520px; margin:4rem auto; text-align:center;">
+      <div style="font-size:3.5rem; margin-bottom:1rem;">&#128203;</div>
+      <h2 style="color:#1e293b; margin:0 0 0.5rem;">No camps saved yet</h2>
+      <p style="color:#64748b; margin:0 0 1.5rem;">Heart a camp on the home page to add it here.</p>
+      <a href="home-page.html" class="btn-plan" style="background:#1a5f4a;color:#fff;border-color:#1a5f4a;text-decoration:none;padding:0.6rem 1.4rem;">Browse camps &rarr;</a>
+    </div>
+
+    <!-- Two-column layout -->
+    <div id="planLayout" class="plan-layout" style="display:none;">
+
+      <!-- LEFT: schedule + camp list -->
+      <div class="plan-content">
+        <div class="plan-head">
+          <div>
+            <h1 class="plan-title">My Summer Plan <span id="campBadge" style="background:#1a5f4a;color:#fff;border-radius:999px;font-size:1rem;padding:0.15rem 0.6rem;font-weight:600;vertical-align:middle;"></span></h1>
+            <p class="plan-subtitle">Your saved camps for summer 2025</p>
+          </div>
+          <div class="plan-actions">
+            <button class="btn-plan" onclick="window.print()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              Print
+            </button>
+            <button class="btn-plan" onclick="clearAll()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+              Clear All
+            </button>
+          </div>
+        </div>
+
+        <!-- Weekly schedule card -->
+        <div class="schedule-section">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+            <h2 class="schedule-heading" style="margin:0;">Weekly Schedule</h2>
+          </div>
+          <div class="schedule-nav">
+            <button class="schedule-nav-btn schedule-prev" id="prevWeek">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+              Prev
+            </button>
+            <span class="schedule-daterange" id="weekLabel">&mdash;</span>
+            <button class="schedule-nav-btn schedule-next-active" id="nextWeek">
+              Next
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+          <div class="schedule-grid-wrap">
+            <table class="schedule-grid">
+              <thead>
+                <tr>
+                  <th class="schedule-time-col">Time</th>
+                  <th>Mon<span class="schedule-date" id="th-mon"></span></th>
+                  <th>Tue<span class="schedule-date" id="th-tue"></span></th>
+                  <th>Wed<span class="schedule-date" id="th-wed"></span></th>
+                  <th>Thu<span class="schedule-date" id="th-thu"></span></th>
+                  <th>Fri<span class="schedule-date" id="th-fri"></span></th>
+                </tr>
+              </thead>
+              <tbody id="scheduleBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Camp list cards -->
+        <div id="campList"></div>
+      </div>
+
+      <!-- RIGHT: sidebar -->
+      <div class="plan-sidebar">
+
+        <!-- Cost Summary card -->
+        <div class="plan-card">
+          <div class="plan-card-head">
+            <span class="plan-card-title">
+              <svg class="plan-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 1 0 0 7h5a3.5 3.5 0 1 1 0 7H6"/></svg>
+              Cost Summary
+            </span>
+            <span class="plan-card-total" id="totalCost">$0</span>
+          </div>
+          <div class="plan-card-body">
+            <div id="costRows"></div>
+            <div class="cost-total-row">
+              <span class="cost-total-label">Estimated Total</span>
+              <span class="cost-total-value" id="totalCost2">$0</span>
+            </div>
+            <p class="cost-note">Per-week costs shown. Actual fees may vary.</p>
+          </div>
+        </div>
+
+        <!-- Camp Legend card -->
+        <div class="plan-card">
+          <div class="plan-card-head">
+            <span class="plan-card-title">
+              <svg class="plan-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>
+              Camp Legend
+            </span>
+          </div>
+          <div class="plan-card-body" id="legendRows"></div>
+        </div>
+
+        <!-- Quick Actions card -->
+        <div class="plan-card">
+          <div class="plan-card-head">
+            <span class="plan-card-title">
+              <svg class="plan-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+              Quick Actions
+            </span>
+          </div>
+          <div class="plan-card-body">
+            <a href="home-page.html" class="quick-action">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              Browse more camps
+            </a>
+            <button class="quick-action" onclick="window.print()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              Print / Save PDF
+            </button>
+            <button class="quick-action" onclick="clearAll()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+              Clear all saved camps
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div id="loadingState" style="padding:4rem;text-align:center;color:#64748b;">Loading your saved camps&hellip;</div>
+  </main>
 
   <script>
     var API_BASE = '/api';
+
+    var COLORS = [
+      { bg:'#dbeafe', border:'#93c5fd', text:'#1e40af', dot:'#2563eb' },
+      { bg:'#dcfce7', border:'#86efac', text:'#166534', dot:'#22c55e' },
+      { bg:'#fef3c7', border:'#fcd34d', text:'#92400e', dot:'#f59e0b' },
+      { bg:'#fce7f3', border:'#f9a8d4', text:'#831843', dot:'#ec4899' },
+      { bg:'#ede9fe', border:'#c4b5fd', text:'#5b21b6', dot:'#8b5cf6' },
+      { bg:'#ffedd5', border:'#fdba74', text:'#9a3412', dot:'#f97316' },
+      { bg:'#cffafe', border:'#67e8f9', text:'#164e63', dot:'#06b6d4' },
+    ];
+
+    var favoriteCamps = [];
+    var currentWeekStart = null;
 
     function getUserUuid() {
       var k = 'summer_camp_user_id';
       var id = localStorage.getItem(k);
       if (!id) {
-        id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-          var r = Math.random() * 16 | 0;
-          return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-        });
+        if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+          id = crypto.randomUUID();
+        } else {
+          id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random() * 16 | 0;
+            return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+          });
+        }
         localStorage.setItem(k, id);
       }
       return id;
     }
 
-    function escapeHtml(s) {
-      if (s == null) return '';
-      var d = document.createElement('div');
-      d.textContent = s;
-      return d.innerHTML;
+    window.addEventListener('DOMContentLoaded', function() {
+      loadFavorites();
+      document.getElementById('prevWeek').addEventListener('click', function() { moveWeek(-1); });
+      document.getElementById('nextWeek').addEventListener('click', function() { moveWeek(1); });
+    });
+
+    function loadFavorites() {
+      fetch(API_BASE + '/favorites/' + getUserUuid())
+        .then(function(r) { return r.json(); })
+        .then(function(ids) {
+          if (!ids || ids.length === 0) { showEmpty(); return; }
+          fetch(API_BASE + '/camps?limit=500')
+            .then(function(r) { return r.json(); })
+            .then(function(camps) {
+              var idSet = new Set(ids.map(String));
+              favoriteCamps = camps.filter(function(c) { return idSet.has(String(c.id)); });
+              if (favoriteCamps.length === 0) { showEmpty(); return; }
+              initWeek();
+              render();
+              document.getElementById('loadingState').style.display = 'none';
+              document.getElementById('planLayout').style.display = 'grid';
+            });
+        })
+        .catch(function() { showEmpty(); });
     }
 
-    function tagLabel(tag) {
-      if (!tag) return '';
-      var t = (tag + '').toLowerCase();
-      if (t === 'popular') return 'Popular';
-      if (t === 'new') return 'New';
-      if (t === 'favourite') return 'Favourite';
-      return tag;
+    function showEmpty() {
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('emptyState').style.display = 'block';
+      document.getElementById('planLayout').style.display = 'none';
     }
 
-    function campImageStyle(c) {
-      var url = c.image_url ? (c.image_url + '').trim() : '';
-      if (url && url.indexOf('#') === 0) return 'background-color:' + escapeHtml(url) + ';';
-      if (url && url.indexOf('http') === 0) return 'background-image:url(' + escapeHtml(url) + ');background-size:cover;';
-      return '';
+    function getMondayOf(date) {
+      var d = new Date(date);
+      var day = d.getDay();
+      var diff = (day === 0) ? -6 : 1 - day;
+      d.setDate(d.getDate() + diff);
+      d.setHours(0, 0, 0, 0);
+      return d;
     }
 
-    function campImageClass(c, index) {
-      var url = c.image_url ? (c.image_url + '').trim() : '';
-      if (url && (url.indexOf('#') === 0 || url.indexOf('http') === 0)) return 'camp-image';
-      return 'camp-image camp-img-' + ((index % 3) + 1);
+    function initWeek() {
+      var earliest = null;
+      favoriteCamps.forEach(function(c) {
+        if (c.start_date) {
+          var d = new Date(c.start_date);
+          if (!earliest || d < earliest) earliest = d;
+        }
+      });
+      var base = earliest || new Date();
+      var now = new Date();
+      if (base < now) base = now;
+      currentWeekStart = getMondayOf(base);
     }
 
-    function removeFavorite(campId, card) {
-      fetch(API_BASE + '/favorites/' + getUserUuid() + '/' + campId, { method: 'DELETE' })
-        .then(function (r) { return r.ok ? r.json() : null; })
-        .then(function (res) {
-          if (!res) return;
-          card.style.transition = 'opacity 0.25s';
-          card.style.opacity = '0';
-          setTimeout(function () {
-            card.remove();
-            var remaining = document.querySelectorAll('.camp-card').length;
-            updateBadge(remaining);
-            if (remaining === 0) renderEmpty();
-          }, 250);
-        });
+    function moveWeek(delta) {
+      var d = new Date(currentWeekStart);
+      d.setDate(d.getDate() + delta * 7);
+      currentWeekStart = d;
+      renderSchedule();
     }
 
-    function updateBadge(n) {
-      var badge = document.getElementById('countBadge');
-      if (n > 0) { badge.textContent = n; badge.style.display = ''; }
-      else { badge.style.display = 'none'; }
+    function fmtDate(d) {
+      return (d.getMonth() + 1) + '/' + d.getDate();
     }
 
-    function renderEmpty() {
-      document.getElementById('content').innerHTML =
-        '<div class="empty-state">' +
-          '<div class="icon">🗓️</div>' +
-          '<h2>No saved camps yet</h2>' +
-          '<p>Browse camps and tap ❤️ to save them here.</p>' +
-          '<a href="home-page.html" class="btn-browse">Browse camps</a>' +
-        '</div>';
+    function fmtMoney(n) {
+      return '$' + (n || 0).toFixed(0);
     }
 
-    function renderCamps(camps) {
-      if (camps.length === 0) { renderEmpty(); return; }
-      updateBadge(camps.length);
-      var html = '<div class="camp-grid">' + camps.map(function (c, i) {
-        var price = typeof c.price === 'number' ? c.price : parseFloat(c.price);
-        var tag = c.tag ? (c.tag + '').trim().toLowerCase() : '';
-        var tagHtml = tag ? '<span class="camp-tag tag-' + escapeHtml(tag) + '">' + escapeHtml(tagLabel(c.tag)) + '</span>' : '';
-        var meta = [];
-        if (c.start_date && c.end_date) meta.push('<li>' + escapeHtml(c.start_date) + ' – ' + escapeHtml(c.end_date) + '</li>');
-        meta.push('<li>Ages ' + c.age_min + '–' + c.age_max + '</li>');
-        if (c.address) meta.push('<li>' + escapeHtml(c.address) + '</li>');
-        var learnHref = (c.registration_link && c.registration_link.trim()) ? c.registration_link : '#';
-        var learnTarget = learnHref.indexOf('http') === 0 ? ' target="_blank" rel="noopener"' : '';
-        return '<article class="camp-card" data-id="' + c.id + '">' +
-          '<div class="' + campImageClass(c, i) + '" style="' + campImageStyle(c) + '">' +
-            tagHtml +
-            '<button type="button" class="btn-remove" title="Remove from My Plan" aria-label="Remove from My Plan">❤️</button>' +
+    function esc(s) {
+      return String(s || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function render() {
+      renderSchedule();
+      renderCampList();
+      renderSidebar();
+      document.getElementById('campBadge').textContent = favoriteCamps.length;
+    }
+
+    function renderSchedule() {
+      var days = [];
+      for (var i = 0; i < 5; i++) {
+        var d = new Date(currentWeekStart);
+        d.setDate(currentWeekStart.getDate() + i);
+        days.push(d);
+      }
+      var ids = ['th-mon', 'th-tue', 'th-wed', 'th-thu', 'th-fri'];
+      for (var i = 0; i < 5; i++) {
+        document.getElementById(ids[i]).textContent = fmtDate(days[i]);
+      }
+      document.getElementById('weekLabel').textContent =
+        fmtDate(days[0]) + ' - ' + fmtDate(days[4]) + ', 2025';
+
+      var weekEnd = new Date(days[4]);
+      weekEnd.setHours(23, 59, 59);
+
+      var activeCamps = favoriteCamps.filter(function(c) {
+        if (!c.start_date || !c.end_date) return false;
+        return new Date(c.start_date) <= weekEnd && new Date(c.end_date) >= days[0];
+      });
+
+      var tbody = document.getElementById('scheduleBody');
+      tbody.innerHTML = '';
+
+      // Row 1: camp name; Row 2: time range
+      [0, 1].forEach(function(rowIdx) {
+        var tr = document.createElement('tr');
+        var timeTd = document.createElement('td');
+        timeTd.className = 'schedule-time';
+        timeTd.textContent = rowIdx === 0 ? 'AM' : 'PM';
+        tr.appendChild(timeTd);
+
+        for (var di = 0; di < 5; di++) {
+          var td = document.createElement('td');
+          var dayDate = days[di];
+          var campsThisDay = activeCamps.filter(function(c) {
+            return new Date(c.start_date) <= dayDate && new Date(c.end_date) >= dayDate;
+          });
+
+          if (campsThisDay.length > 0) {
+            td.className = 'schedule-cell-block';
+            campsThisDay.forEach(function(c) {
+              var colorIdx = favoriteCamps.indexOf(c) % COLORS.length;
+              var col = COLORS[colorIdx];
+              var block = document.createElement('div');
+              block.className = 'schedule-block';
+              block.style.background = col.bg;
+              block.style.border = '1px solid ' + col.border;
+              block.style.color = col.text;
+              if (rowIdx === 0) {
+                var n = c.name || '';
+                block.textContent = n.length > 22 ? n.substring(0, 20) + '...' : n;
+              } else {
+                var s = (c.start_time || '').substring(0, 5);
+                var e = (c.end_time || '').substring(0, 5);
+                block.textContent = (s && e) ? (s + '-' + e) : (c.category || '');
+              }
+              td.appendChild(block);
+            });
+          } else {
+            td.style.background = '#f8fafc';
+          }
+          tr.appendChild(td);
+        }
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderCampList() {
+      var container = document.getElementById('campList');
+      container.innerHTML = '';
+      favoriteCamps.forEach(function(c, idx) {
+        var col = COLORS[idx % COLORS.length];
+        var tagHtml = '';
+        if (c.tag) {
+          var tagMap = {
+            popular: '#fbbf24;color:#78350f',
+            new: '#34d399;color:#064e3b',
+            favourite: '#f472b6;color:#831843'
+          };
+          var tc = tagMap[c.tag] || '#e2e8f0;color:#475569';
+          tagHtml = '<span style="background:' + tc + ';border-radius:999px;font-size:0.7rem;font-weight:700;padding:0.15rem 0.55rem;text-transform:uppercase;">' + esc(c.tag) + '</span>';
+        }
+        var dateRange = (c.start_date && c.end_date) ? (c.start_date + ' to ' + c.end_date) : '';
+        var card = document.createElement('div');
+        card.style.cssText = 'background:#fff;border:1px solid #e2e8f0;border-left:4px solid ' + col.dot + ';border-radius:10px;padding:1rem 1.25rem;margin-bottom:1rem;display:flex;align-items:flex-start;gap:1rem;';
+        var timeStr = c.start_time ? c.start_time.substring(0,5) + ' - ' + (c.end_time||'?').substring(0,5) : '';
+        card.innerHTML =
+          '<div style="flex:1;min-width:0;">' +
+            '<div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.25rem;">' +
+              '<strong style="font-size:0.95rem;color:#1e293b;">' + esc(c.name) + '</strong>' +
+              tagHtml +
+            '</div>' +
+            '<div style="font-size:0.82rem;color:#64748b;margin-bottom:0.3rem;">' + esc(c.organization || '') + '</div>' +
+            '<div style="font-size:0.82rem;color:#475569;display:flex;flex-wrap:wrap;gap:0.75rem;">' +
+              (dateRange ? '<span>&#128197; ' + dateRange + '</span>' : '') +
+              (timeStr ? '<span>&#128344; ' + timeStr + '</span>' : '') +
+              (c.category ? '<span>&#127991; ' + esc(c.category) + '</span>' : '') +
+              (c.location_address ? '<span>&#128205; ' + esc(c.location_address) + '</span>' : '') +
+            '</div>' +
           '</div>' +
-          '<div class="camp-body">' +
-            '<h3 class="camp-name">' + escapeHtml(c.name) + '</h3>' +
-            (c.organization ? '<p class="camp-org">' + escapeHtml(c.organization) + '</p>' : '') +
-            '<ul class="camp-meta">' + meta.join('') + '</ul>' +
-            '<p class="camp-price"><strong>$' + price.toFixed(0) + '</strong> <span>CAD</span></p>' +
-            '<a href="' + escapeHtml(learnHref) + '" class="btn-learn"' + learnTarget + '>Learn more</a>' +
-          '</div></article>';
-      }).join('') + '</div>';
-
-      document.getElementById('content').innerHTML = html;
-
-      document.querySelectorAll('.btn-remove').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          var card = btn.closest('.camp-card');
-          removeFavorite(parseInt(card.getAttribute('data-id'), 10), card);
-        });
+          '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.4rem;flex-shrink:0;">' +
+            '<span style="font-size:1rem;font-weight:700;color:#1e293b;">' + fmtMoney(c.price_per_week) + ' <span style="font-size:0.75rem;font-weight:400;color:#64748b;">/wk</span></span>' +
+            (c.registration_link ? '<a href="' + esc(c.registration_link) + '" target="_blank" rel="noopener" style="font-size:0.82rem;color:#1a5f4a;text-decoration:underline;">Register &rarr;</a>' : '') +
+            '<button onclick="removeCamp(' + c.id + ')" style="background:none;border:none;color:#94a3b8;font-size:0.82rem;cursor:pointer;padding:0;margin-top:0.25rem;">&times; Remove</button>' +
+          '</div>';
+        container.appendChild(card);
       });
     }
 
-    fetch(API_BASE + '/favorites/' + getUserUuid())
-      .then(function (r) { return r.ok ? r.json() : Promise.reject(r.statusText); })
-      .then(renderCamps)
-      .catch(function (err) {
-        document.getElementById('content').innerHTML =
-          '<div class="error-msg">Failed to load saved camps. Is the server running?</div>';
+    function renderSidebar() {
+      var total = 0;
+      var costHtml = '';
+      var legendHtml = '';
+      favoriteCamps.forEach(function(c, idx) {
+        var col = COLORS[idx % COLORS.length];
+        total += (c.price_per_week || 0);
+        var shortName = c.name.length > 26 ? c.name.substring(0, 24) + '...' : c.name;
+        costHtml +=
+          '<div class="cost-row">' +
+            '<span class="cost-dot" style="background:' + col.dot + '"></span>' +
+            '<span class="cost-label">' + esc(shortName) + '</span>' +
+            '<span class="cost-value">' + fmtMoney(c.price_per_week) + '/wk</span>' +
+          '</div>';
+        legendHtml +=
+          '<div class="legend-row">' +
+            '<span style="width:12px;height:12px;border-radius:3px;background:' + col.bg + ';border:1px solid ' + col.border + ';flex-shrink:0;display:inline-block;"></span>' +
+            '<span style="flex:1;font-size:0.88rem;color:#334155;">' + esc(c.name) + '</span>' +
+            (c.registration_link ? '<a href="' + esc(c.registration_link) + '" target="_blank" rel="noopener" style="font-size:0.8rem;color:#1a5f4a;">Register</a>' : '') +
+          '</div>';
       });
+      document.getElementById('costRows').innerHTML = costHtml;
+      document.getElementById('totalCost').textContent = fmtMoney(total);
+      document.getElementById('totalCost2').textContent = fmtMoney(total);
+      document.getElementById('legendRows').innerHTML = legendHtml ||
+        '<p style="color:#94a3b8;font-size:0.9rem;margin:0;">No camps saved.</p>';
+    }
+
+    function removeCamp(id) {
+      fetch(API_BASE + '/favorites/' + getUserUuid() + '/' + id, { method: 'DELETE' })
+        .then(function() {
+          favoriteCamps = favoriteCamps.filter(function(c) { return c.id !== id; });
+          if (favoriteCamps.length === 0) { showEmpty(); return; }
+          render();
+        });
+    }
+
+    function clearAll() {
+      if (!confirm('Remove all saved camps from your plan?')) return;
+      var promises = favoriteCamps.map(function(c) {
+        return fetch(API_BASE + '/favorites/' + getUserUuid() + '/' + c.id, { method: 'DELETE' });
+      });
+      Promise.all(promises).then(function() { favoriteCamps = []; showEmpty(); });
+    }
   </script>
 </body>
 </html>
