@@ -56,10 +56,11 @@ class CampUpdate(BaseModel):
     tag: Optional[str] = None
 
 def require_admin(x_admin_key: Optional[str] = Header(None, alias="X-Admin-Key")):
-    key = os.environ.get("ADMIN_API_KEY")
-    if key and x_admin_key != key:
+    key = os.environ.get("ADMIN_API_KEY", "").strip()
+    if not key:
+        raise HTTPException(503, "ADMIN_API_KEY is not configured on the server")
+    if x_admin_key != key:
         raise HTTPException(401, "Invalid or missing admin key")
-    return True
 
 app.add_middleware(
     CORSMiddleware,
@@ -184,6 +185,11 @@ def delete_camp(camp_id: int, _: bool = Depends(require_admin)):
         return {"ok": True}
     finally:
         conn.close()
+
+@app.get("/admin/ping")
+def admin_ping(_: bool = Depends(require_admin)):
+    """Verify admin key without side effects."""
+    return {"ok": True}
 
 @app.get("/health")
 def health():
