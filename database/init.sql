@@ -53,6 +53,14 @@ CREATE TABLE IF NOT EXISTS camps (
 ALTER TABLE camps ADD COLUMN IF NOT EXISTS image_url VARCHAR(500);
 ALTER TABLE camps ADD COLUMN IF NOT EXISTS tag VARCHAR(50);
 
+-- Favorites: device UUID (stored in browser localStorage) → camp
+CREATE TABLE IF NOT EXISTS favorites (
+    user_uuid VARCHAR(36) NOT NULL,
+    camp_id   INTEGER NOT NULL REFERENCES camps(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_uuid, camp_id)
+);
+
 -- ========== 三条示例营地数据（仅当表为空时插入）==========
 -- 想继续在文件里加更多条，请用 database/seed_extra.sql，然后执行：
 --   PGPASSWORD=camppass psql -h localhost -U campuser -d camps -f database/seed_extra.sql

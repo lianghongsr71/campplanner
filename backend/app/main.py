@@ -1,8 +1,10 @@
 """
 Summer Camp Finder - FastAPI Backend
 GET /camps: age, q (keyword), category filters. Admin: X-Admin-Key for POST/PUT/DELETE.
+Favorites: GET/POST/DELETE /favorites/{user_uuid}/{camp_id}, GET /favorites/{user_uuid}.
 """
 from typing import Optional
+import re
 from decimal import Decimal
 import os
 import psycopg2
@@ -186,6 +188,60 @@ def delete_camp(camp_id: int, _: bool = Depends(require_admin)):
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+_UUID_RE = re.compile(r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$', re.I)
+
+def _valid_uuid(user_uuid: str):
+    if not _UUID_RE.match(user_uuid):
+        raise HTTPException(400, "Invalid user UUID")
+
+@app.get("/favorites/{user_uuid}")
+def get_favorites(user_uuid: str):
+    _valid_uuid(user_uuid)
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT c.id, c.name, c.organization, c.age_min, c.age_max, c.start_date, c.end_date,
+                       c.time_start, c.time_end, c.price, c.category, c.address, c.latitude, c.longitude,
+                       c.registration_link, c.days_of_week, c.description, c.image_url, c.tag
+                FROM favorites f JOIN camps c ON f.camp_id = c.id
+                WHERE f.user_uuid = %s ORDER BY f.created_at
+            """, (user_uuid,))
+            rows = cur.fetchall()
+        return [_row_to_dict(row) for row in rows]
+    finally:
+        conn.close()
+
+@app.post("/favorites/{user_uuid}/{camp_id}")
+def add_favorite(user_uuid: str, camp_id: int):
+    _valid_uuid(user_uuid)
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("SELECT id FROM camps WHERE id = %s", (camp_id,))
+            if not cur.fetchone():
+                raise HTTPException(404, "Camp not found")
+            cur.execute(
+                "INSERT INTO favorites (user_uuid, camp_id) VALUES (%s, %s) ON CONFLICT DO NOTHING",
+                (user_uuid, camp_id)
+            )
+        conn.commit()
+        return {"ok": True}
+    finally:
+        conn.close()
+
+@app.delete("/favorites/{user_uuid}/{camp_id}")
+def remove_favorite(user_uuid: str, camp_id: int):
+    _valid_uuid(user_uuid)
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("DELETE FROM favorites WHERE user_uuid = %s AND camp_id = %s", (user_uuid, camp_id))
+        conn.commit()
+        return {"ok": True}
+    finally:
+        conn.close()
 
 if __name__ == "__main__":
     import uvicorn

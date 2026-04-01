@@ -91,7 +91,7 @@
   </div>
 
   <script>
-    var API_BASE = window.location.protocol + '//' + window.location.hostname + ':8000';
+    var API_BASE = '/api';
     var KEY_STORAGE = 'summer_camp_admin_key';
     function getAdminKey() { return sessionStorage.getItem(KEY_STORAGE) || document.getElementById('adminKey').value || ''; }
     document.getElementById('saveKey').onclick = function () {

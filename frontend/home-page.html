@@ -15,6 +15,9 @@
     .category-pill[data-category="art"].active { background: #7c3aed; border-color: #7c3aed; }
     .category-pill[data-category="academe"] { border-color: #22c55e; color: #22c55e; }
     .category-pill[data-category="academe"].active { background: #22c55e; border-color: #22c55e; }
+    .btn-fav { position: absolute; top: 0.5rem; right: 0.5rem; background: rgba(255,255,255,0.85); border: none; border-radius: 50%; width: 2rem; height: 2rem; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.15s; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+    .btn-fav:hover { transform: scale(1.15); }
+    .camp-image, [class^="camp-img"] { position: relative; }
   </style>
 </head>
 <body>
@@ -120,8 +123,50 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script>
-    var API_BASE = window.location.protocol + '//' + window.location.hostname + ':8000';
+    var API_BASE = '/api';
     var map, markersLayer;
+
+    /* ── UUID / favorites ── */
+    function getUserUuid() {
+      var k = 'summer_camp_user_id';
+      var id = localStorage.getItem(k);
+      if (!id) {
+        id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+          var r = Math.random() * 16 | 0;
+          return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+        localStorage.setItem(k, id);
+      }
+      return id;
+    }
+    var favSet = new Set(); // camp IDs currently saved
+    function loadFavorites(callback) {
+      fetch(API_BASE + '/favorites/' + getUserUuid())
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (camps) {
+          favSet = new Set(camps.map(function (c) { return c.id; }));
+          if (callback) callback();
+        })
+        .catch(function () { if (callback) callback(); });
+    }
+    function toggleFavorite(campId, btn) {
+      var isSaved = favSet.has(campId);
+      var method = isSaved ? 'DELETE' : 'POST';
+      fetch(API_BASE + '/favorites/' + getUserUuid() + '/' + campId, { method: method })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (res) {
+          if (!res) return;
+          if (isSaved) { favSet.delete(campId); } else { favSet.add(campId); }
+          updateFavBtn(btn, campId);
+        });
+    }
+    function updateFavBtn(btn, campId) {
+      var saved = favSet.has(campId);
+      btn.setAttribute('title', saved ? 'Remove from My Plan' : 'Save to My Plan');
+      btn.setAttribute('aria-label', saved ? 'Remove from My Plan' : 'Save to My Plan');
+      btn.classList.toggle('fav-saved', saved);
+      btn.innerHTML = saved ? '❤️' : '🤍';
+    }
 
     function getSearchParams() {
       return {
@@ -167,8 +212,7 @@
       var url = c.image_url ? (c.image_url + '').trim() : '';
       if (url && url.indexOf('#') === 0) return 'background-color:' + escapeHtml(url) + ';';
       if (url && url.indexOf('http') === 0) return 'background-image:url(' + escapeHtml(url) + ');';
-      var cls = (index % 3) + 1;
-      return ''; /* use class camp-img-1/2/3 */
+      return '';
     }
     function campImageClass(c, index) {
       var url = c.image_url ? (c.image_url + '').trim() : '';
@@ -203,8 +247,10 @@
         if (c.address) meta.push('<li>' + escapeHtml(c.address) + '</li>');
         var learnHref = (c.registration_link && c.registration_link.trim()) ? c.registration_link : '#';
         var learnTarget = learnHref.indexOf('http') === 0 ? ' target="_blank" rel="noopener"' : '';
+        var saved = favSet.has(c.id);
+        var favHtml = '<button type="button" class="btn-fav' + (saved ? ' fav-saved' : '') + '" data-camp-id="' + c.id + '" title="' + (saved ? 'Remove from My Plan' : 'Save to My Plan') + '" aria-label="' + (saved ? 'Remove from My Plan' : 'Save to My Plan') + '">' + (saved ? '❤️' : '🤍') + '</button>';
         return '<article class="camp-card">' +
-          '<div class="' + imgCls + '" style="' + imgStyle + '">' + tagHtml + '</div>' +
+          '<div class="' + imgCls + '" style="' + imgStyle + '">' + tagHtml + favHtml + '</div>' +
           '<div class="camp-body">' +
             '<h3 class="camp-name">' + escapeHtml(c.name) + '</h3>' +
             (c.organization ? '<p class="camp-org">' + escapeHtml(c.organization) + '</p>' : '') +
@@ -213,6 +259,15 @@
             '<a href="' + escapeHtml(learnHref) + '" class="btn-learn"' + learnTarget + '>Learn more</a>' +
           '</div></article>';
       }).join('') + '</div>';
+
+      // bind fav buttons
+      el.querySelectorAll('.btn-fav').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+          e.preventDefault();
+          toggleFavorite(parseInt(btn.getAttribute('data-camp-id'), 10), btn);
+        });
+      });
+
       updateMapMarkers(camps);
     }
     function loadCamps() {
@@ -255,7 +310,8 @@
       if (e.key === 'Enter') loadCamps();
     });
     document.getElementById('age').addEventListener('change', loadCamps);
-    loadCamps();
+    // Load favorites first, then camps so heart icons render correctly
+    loadFavorites(loadCamps);
   </script>
 </body>
 </html>

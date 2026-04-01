@@ -6,14 +6,47 @@
   <title>My Summer Plan — Summer Camp Finder</title>
   <style>
     * { box-sizing: border-box; }
-    body { font-family: system-ui, -apple-system, sans-serif; max-width: 720px; margin: 0 auto; padding: 1rem 1.5rem; background: #f5f5f5; }
+    body { font-family: system-ui, -apple-system, sans-serif; max-width: 900px; margin: 0 auto; padding: 1rem 1.5rem; background: #f5f5f5; }
     .nav { margin-bottom: 1.5rem; padding: 0.5rem 0; border-bottom: 1px solid #ddd; }
     .nav a { margin-right: 1rem; color: #1a5f4a; text-decoration: none; font-weight: 500; }
     .nav a:hover { text-decoration: underline; }
     .nav a.active { text-decoration: underline; }
-    h1 { color: #1a5f4a; margin-top: 0; }
-    .card { background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-    .card p { color: #555; margin: 0.5rem 0 0 0; }
+    h1 { color: #1a5f4a; margin-top: 0; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .count-badge { background: #1a5f4a; color: #fff; border-radius: 999px; font-size: 0.85rem; padding: 0.15rem 0.6rem; font-weight: 600; }
+    .subtitle { color: #666; margin: -0.5rem 0 1.5rem; font-size: 0.95rem; }
+
+    /* Empty state */
+    .empty-state { background: #fff; border-radius: 10px; padding: 3rem 2rem; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .empty-state .icon { font-size: 3rem; margin-bottom: 0.75rem; }
+    .empty-state h2 { color: #1a5f4a; margin: 0 0 0.5rem; }
+    .empty-state p { color: #666; margin: 0 0 1.25rem; }
+    .btn-browse { display: inline-block; background: #1a5f4a; color: #fff; text-decoration: none; padding: 0.6rem 1.4rem; border-radius: 8px; font-weight: 500; transition: background 0.15s; }
+    .btn-browse:hover { background: #144d3b; }
+
+    /* Camp grid */
+    .camp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.25rem; }
+    .camp-card { background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); display: flex; flex-direction: column; }
+    .camp-image { height: 120px; background: #cbd5e1; position: relative; background-size: cover; background-position: center; }
+    .camp-img-1 { background: linear-gradient(135deg, #0ea5e9, #0369a1); }
+    .camp-img-2 { background: linear-gradient(135deg, #f97316, #ea580c); }
+    .camp-img-3 { background: linear-gradient(135deg, #10b981, #059669); }
+    .camp-tag { position: absolute; top: 0.5rem; left: 0.5rem; padding: 0.2rem 0.55rem; border-radius: 999px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+    .tag-popular { background: #fbbf24; color: #78350f; }
+    .tag-new { background: #34d399; color: #064e3b; }
+    .tag-favourite { background: #f472b6; color: #831843; }
+    .btn-remove { position: absolute; top: 0.5rem; right: 0.5rem; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 2rem; height: 2rem; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,0.2); transition: transform 0.15s; }
+    .btn-remove:hover { transform: scale(1.15); }
+    .camp-body { padding: 0.9rem 1rem 1rem; flex: 1; display: flex; flex-direction: column; }
+    .camp-name { font-size: 0.95rem; font-weight: 700; margin: 0 0 0.2rem; color: #1e293b; }
+    .camp-org { font-size: 0.8rem; color: #64748b; margin: 0 0 0.5rem; }
+    .camp-meta { list-style: none; padding: 0; margin: 0 0 0.6rem; font-size: 0.8rem; color: #64748b; display: flex; flex-direction: column; gap: 0.15rem; }
+    .camp-price { font-size: 0.9rem; color: #1e293b; margin: auto 0 0.6rem; }
+    .camp-price span { color: #64748b; font-size: 0.8rem; }
+    .btn-learn { display: block; text-align: center; background: #1a5f4a; color: #fff; text-decoration: none; padding: 0.45rem; border-radius: 6px; font-size: 0.85rem; font-weight: 500; transition: background 0.15s; }
+    .btn-learn:hover { background: #144d3b; }
+
+    .loading { padding: 3rem; text-align: center; color: #666; }
+    .error-msg { padding: 1rem; background: #fee2e2; color: #991b1b; border-radius: 8px; margin-bottom: 1rem; }
   </style>
 </head>
 <body>
@@ -23,10 +56,132 @@
     <a href="admin-dashboard.html">Admin Dashboard</a>
   </nav>
 
-  <h1>My Summer Plan</h1>
-  <div class="card">
-    <p>Save your favourite camps and plan your summer here. (Coming soon.)</p>
-    <p><a href="home-page.html">Browse camps</a> to get started.</p>
-  </div>
+  <h1>My Summer Plan <span id="countBadge" class="count-badge" style="display:none">0</span></h1>
+  <p class="subtitle">Your saved camps — view and plan your summer at a glance.</p>
+
+  <div id="content"><div class="loading">Loading your saved camps…</div></div>
+
+  <script>
+    var API_BASE = '/api';
+
+    function getUserUuid() {
+      var k = 'summer_camp_user_id';
+      var id = localStorage.getItem(k);
+      if (!id) {
+        id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+          var r = Math.random() * 16 | 0;
+          return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+        localStorage.setItem(k, id);
+      }
+      return id;
+    }
+
+    function escapeHtml(s) {
+      if (s == null) return '';
+      var d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    function tagLabel(tag) {
+      if (!tag) return '';
+      var t = (tag + '').toLowerCase();
+      if (t === 'popular') return 'Popular';
+      if (t === 'new') return 'New';
+      if (t === 'favourite') return 'Favourite';
+      return tag;
+    }
+
+    function campImageStyle(c) {
+      var url = c.image_url ? (c.image_url + '').trim() : '';
+      if (url && url.indexOf('#') === 0) return 'background-color:' + escapeHtml(url) + ';';
+      if (url && url.indexOf('http') === 0) return 'background-image:url(' + escapeHtml(url) + ');background-size:cover;';
+      return '';
+    }
+
+    function campImageClass(c, index) {
+      var url = c.image_url ? (c.image_url + '').trim() : '';
+      if (url && (url.indexOf('#') === 0 || url.indexOf('http') === 0)) return 'camp-image';
+      return 'camp-image camp-img-' + ((index % 3) + 1);
+    }
+
+    function removeFavorite(campId, card) {
+      fetch(API_BASE + '/favorites/' + getUserUuid() + '/' + campId, { method: 'DELETE' })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (res) {
+          if (!res) return;
+          card.style.transition = 'opacity 0.25s';
+          card.style.opacity = '0';
+          setTimeout(function () {
+            card.remove();
+            var remaining = document.querySelectorAll('.camp-card').length;
+            updateBadge(remaining);
+            if (remaining === 0) renderEmpty();
+          }, 250);
+        });
+    }
+
+    function updateBadge(n) {
+      var badge = document.getElementById('countBadge');
+      if (n > 0) { badge.textContent = n; badge.style.display = ''; }
+      else { badge.style.display = 'none'; }
+    }
+
+    function renderEmpty() {
+      document.getElementById('content').innerHTML =
+        '<div class="empty-state">' +
+          '<div class="icon">🗓️</div>' +
+          '<h2>No saved camps yet</h2>' +
+          '<p>Browse camps and tap ❤️ to save them here.</p>' +
+          '<a href="home-page.html" class="btn-browse">Browse camps</a>' +
+        '</div>';
+    }
+
+    function renderCamps(camps) {
+      if (camps.length === 0) { renderEmpty(); return; }
+      updateBadge(camps.length);
+      var html = '<div class="camp-grid">' + camps.map(function (c, i) {
+        var price = typeof c.price === 'number' ? c.price : parseFloat(c.price);
+        var tag = c.tag ? (c.tag + '').trim().toLowerCase() : '';
+        var tagHtml = tag ? '<span class="camp-tag tag-' + escapeHtml(tag) + '">' + escapeHtml(tagLabel(c.tag)) + '</span>' : '';
+        var meta = [];
+        if (c.start_date && c.end_date) meta.push('<li>' + escapeHtml(c.start_date) + ' – ' + escapeHtml(c.end_date) + '</li>');
+        meta.push('<li>Ages ' + c.age_min + '–' + c.age_max + '</li>');
+        if (c.address) meta.push('<li>' + escapeHtml(c.address) + '</li>');
+        var learnHref = (c.registration_link && c.registration_link.trim()) ? c.registration_link : '#';
+        var learnTarget = learnHref.indexOf('http') === 0 ? ' target="_blank" rel="noopener"' : '';
+        return '<article class="camp-card" data-id="' + c.id + '">' +
+          '<div class="' + campImageClass(c, i) + '" style="' + campImageStyle(c) + '">' +
+            tagHtml +
+            '<button type="button" class="btn-remove" title="Remove from My Plan" aria-label="Remove from My Plan">❤️</button>' +
+          '</div>' +
+          '<div class="camp-body">' +
+            '<h3 class="camp-name">' + escapeHtml(c.name) + '</h3>' +
+            (c.organization ? '<p class="camp-org">' + escapeHtml(c.organization) + '</p>' : '') +
+            '<ul class="camp-meta">' + meta.join('') + '</ul>' +
+            '<p class="camp-price"><strong>$' + price.toFixed(0) + '</strong> <span>CAD</span></p>' +
+            '<a href="' + escapeHtml(learnHref) + '" class="btn-learn"' + learnTarget + '>Learn more</a>' +
+          '</div></article>';
+      }).join('') + '</div>';
+
+      document.getElementById('content').innerHTML = html;
+
+      document.querySelectorAll('.btn-remove').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var card = btn.closest('.camp-card');
+          removeFavorite(parseInt(card.getAttribute('data-id'), 10), card);
+        });
+      });
+    }
+
+    fetch(API_BASE + '/favorites/' + getUserUuid())
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(r.statusText); })
+      .then(renderCamps)
+      .catch(function (err) {
+        document.getElementById('content').innerHTML =
+          '<div class="error-msg">Failed to load saved camps. Is the server running?</div>';
+      });
+  </script>
 </body>
 </html>
