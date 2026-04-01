@@ -627,17 +627,8 @@
       document.getElementById('loginGate').classList.remove('hidden');
     };
 
-    /* Auto-login if key already in session */
-    (function () {
-      var saved = getAdminKey();
-      if (!saved) return; // show login gate
-      fetch(API_BASE + '/admin/ping', { headers: { 'X-Admin-Key': saved } })
-        .then(function (res) {
-          if (res.ok) { unlockDashboard(saved); }
-          else { sessionStorage.removeItem(KEY_STORAGE); /* stay on login gate */ }
-        })
-        .catch(function () { /* stay on login gate */ });
-    })();
+    /* Auth temporarily disabled — skip login gate */
+    unlockDashboard('');
 
     /* ── Modal helpers ── */
     function openModal(title) {
