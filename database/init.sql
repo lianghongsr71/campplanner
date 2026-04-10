@@ -53,13 +53,29 @@ CREATE TABLE IF NOT EXISTS camps (
 ALTER TABLE camps ADD COLUMN IF NOT EXISTS image_url VARCHAR(500);
 ALTER TABLE camps ADD COLUMN IF NOT EXISTS tag VARCHAR(50);
 
--- Favorites: device UUID (stored in browser localStorage) → camp
-CREATE TABLE IF NOT EXISTS favorites (
-    user_uuid VARCHAR(36) NOT NULL,
-    camp_id   INTEGER NOT NULL REFERENCES camps(id) ON DELETE CASCADE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (user_uuid, camp_id)
+-- Camp sessions: each camp can have multiple weekly sessions
+CREATE TABLE IF NOT EXISTS camp_sessions (
+    id             SERIAL PRIMARY KEY,
+    camp_id        INTEGER NOT NULL REFERENCES camps(id) ON DELETE CASCADE,
+    week_number    INTEGER NOT NULL,
+    label          VARCHAR(100),
+    start_date     DATE NOT NULL,
+    end_date       DATE NOT NULL,
+    price_per_week DECIMAL(10,2),
+    created_at     TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (camp_id, week_number)
 );
+
+-- Favorites: (user_uuid, camp_id, session_id) — session_id NULL for non-session camps
+CREATE TABLE IF NOT EXISTS favorites (
+    fav_id     SERIAL PRIMARY KEY,
+    user_uuid  VARCHAR(36) NOT NULL,
+    camp_id    INTEGER NOT NULL REFERENCES camps(id) ON DELETE CASCADE,
+    session_id INTEGER REFERENCES camp_sessions(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+CREATE UNIQUE INDEX IF NOT EXISTS favorites_unique_session
+    ON favorites (user_uuid, camp_id, COALESCE(session_id, -1));
 
 -- ========== 三条示例营地数据（仅当表为空时插入）==========
 -- 想继续在文件里加更多条，请用 database/seed_extra.sql，然后执行：

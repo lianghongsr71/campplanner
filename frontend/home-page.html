@@ -139,31 +139,129 @@
       }
       return id;
     }
-    var favSet = new Set(); // camp IDs currently saved
+    var favSet = new Set(); // camp IDs that have any saved session
+
+    /* ── Load which camps the user has saved (any session) ── */
     function loadFavorites(callback) {
-      fetch(API_BASE + '/favorites/' + getUserUuid())
+      fetch(API_BASE + '/favorites/' + getUserUuid() + '/camp_ids')
         .then(function (r) { return r.ok ? r.json() : []; })
-        .then(function (camps) {
-          favSet = new Set(camps.map(function (c) { return c.id; }));
+        .then(function (ids) {
+          favSet = new Set(ids.map(Number));
           if (callback) callback();
         })
         .catch(function () { if (callback) callback(); });
     }
+
+    /* ── Heart click → show session picker ── */
     function toggleFavorite(campId, btn) {
-      var isSaved = favSet.has(campId);
-      var method = isSaved ? 'DELETE' : 'POST';
-      fetch(API_BASE + '/favorites/' + getUserUuid() + '/' + campId, { method: method })
-        .then(function (r) { return r.ok ? r.json() : null; })
-        .then(function (res) {
-          if (!res) return;
-          if (isSaved) { favSet.delete(campId); } else { favSet.add(campId); }
-          updateFavBtn(btn, campId);
+      fetch(API_BASE + '/camps/' + campId + '/sessions')
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (sessions) {
+          if (sessions.length === 0) {
+            // No sessions: toggle directly (legacy single-date camp)
+            var isSaved = favSet.has(campId);
+            if (isSaved) {
+              fetch(API_BASE + '/favorites/' + getUserUuid() + '/camp/' + campId, { method: 'DELETE' })
+                .then(function () { favSet.delete(campId); updateFavBtn(btn, campId); });
+            } else {
+              fetch(API_BASE + '/favorites/' + getUserUuid(), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ camp_id: campId })
+              }).then(function () { favSet.add(campId); updateFavBtn(btn, campId); });
+            }
+          } else {
+            openSessionPicker(campId, sessions, btn);
+          }
         });
     }
+
+    /* ── Session picker modal ── */
+    function openSessionPicker(campId, sessions, heartBtn) {
+      // Fetch currently saved session_ids for this camp
+      fetch(API_BASE + '/favorites/' + getUserUuid())
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (favs) {
+          var savedSessionIds = new Set(
+            favs.filter(function (f) { return f.camp_id === campId && f.session_id; })
+                .map(function (f) { return f.session_id; })
+          );
+          var favIdMap = {}; // session_id → fav_id
+          favs.forEach(function (f) {
+            if (f.camp_id === campId && f.session_id) favIdMap[f.session_id] = f.fav_id;
+          });
+          showSessionModal(campId, sessions, savedSessionIds, favIdMap, heartBtn);
+        });
+    }
+
+    function showSessionModal(campId, sessions, savedSessionIds, favIdMap, heartBtn) {
+      var existing = document.getElementById('sessionPickerModal');
+      if (existing) existing.remove();
+
+      var rows = sessions.map(function (s) {
+        var checked = savedSessionIds.has(s.id) ? 'checked' : '';
+        var price = s.price_per_week != null ? ' — $' + parseFloat(s.price_per_week).toFixed(0) : '';
+        return '<label style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0;border-bottom:1px solid #f1f5f9;cursor:pointer;">' +
+          '<input type="checkbox" data-session-id="' + s.id + '" data-fav-id="' + (favIdMap[s.id] || '') + '" ' + checked + ' style="width:16px;height:16px;accent-color:#1a5f4a;">' +
+          '<span style="flex:1;font-size:0.9rem;color:#1e293b;">' + escapeHtml(s.label || ('Week ' + s.week_number)) + '</span>' +
+          '<span style="font-size:0.85rem;color:#64748b;">' + escapeHtml(price) + '</span>' +
+          '</label>';
+      }).join('');
+
+      var modal = document.createElement('div');
+      modal.id = 'sessionPickerModal';
+      modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9999;display:flex;align-items:center;justify-content:center;';
+      modal.innerHTML =
+        '<div style="background:#fff;border-radius:14px;width:min(440px,92vw);max-height:80vh;overflow:auto;box-shadow:0 8px 32px rgba(0,0,0,0.18);">' +
+          '<div style="padding:1.25rem 1.5rem;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;">' +
+            '<h3 style="margin:0;font-size:1.05rem;color:#1e293b;">Choose Week(s) to Save</h3>' +
+            '<button id="spClose" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#94a3b8;line-height:1;">&times;</button>' +
+          '</div>' +
+          '<div style="padding:1rem 1.5rem;">' + rows + '</div>' +
+          '<div style="padding:1rem 1.5rem;border-top:1px solid #e2e8f0;display:flex;gap:0.75rem;justify-content:flex-end;">' +
+            '<button id="spCancel" style="padding:0.5rem 1rem;border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;color:#475569;cursor:pointer;">Cancel</button>' +
+            '<button id="spSave" style="padding:0.5rem 1.25rem;border:none;border-radius:8px;background:#1a5f4a;color:#fff;font-weight:600;cursor:pointer;">Save to My Plan</button>' +
+          '</div>' +
+        '</div>';
+
+      document.body.appendChild(modal);
+
+      function closeModal() { modal.remove(); }
+      document.getElementById('spClose').onclick = closeModal;
+      document.getElementById('spCancel').onclick = closeModal;
+      modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+
+      document.getElementById('spSave').onclick = function () {
+        var checkboxes = modal.querySelectorAll('input[type=checkbox]');
+        var promises = [];
+        checkboxes.forEach(function (cb) {
+          var sid = parseInt(cb.getAttribute('data-session-id'), 10);
+          var favId = cb.getAttribute('data-fav-id');
+          var wasSaved = savedSessionIds.has(sid);
+          if (cb.checked && !wasSaved) {
+            promises.push(fetch(API_BASE + '/favorites/' + getUserUuid(), {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ camp_id: campId, session_id: sid })
+            }));
+          } else if (!cb.checked && wasSaved && favId) {
+            promises.push(fetch(API_BASE + '/favorites/' + getUserUuid() + '/' + favId, { method: 'DELETE' }));
+          }
+        });
+        Promise.all(promises).then(function () {
+          // Refresh heart state
+          var anyChecked = Array.from(checkboxes).some(function (cb) { return cb.checked; });
+          if (anyChecked) { favSet.add(campId); } else { favSet.delete(campId); }
+          updateFavBtn(heartBtn, campId);
+          closeModal();
+        });
+      };
+    }
+
     function updateFavBtn(btn, campId) {
       var saved = favSet.has(campId);
-      btn.setAttribute('title', saved ? 'Remove from My Plan' : 'Save to My Plan');
-      btn.setAttribute('aria-label', saved ? 'Remove from My Plan' : 'Save to My Plan');
+      btn.setAttribute('title', saved ? 'Edit weeks in My Plan' : 'Save to My Plan');
+      btn.setAttribute('aria-label', saved ? 'Edit weeks in My Plan' : 'Save to My Plan');
       btn.classList.toggle('fav-saved', saved);
       btn.innerHTML = saved ? '❤️' : '🤍';
     }

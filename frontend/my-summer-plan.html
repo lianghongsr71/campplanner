@@ -192,21 +192,17 @@
     });
 
     function loadFavorites() {
+      // New API returns enriched objects: fav_id, camp_id, session_id, session_label,
+      // start_date/end_date (session or camp), price_per_week, plus all camp fields.
       fetch(API_BASE + '/favorites/' + getUserUuid())
-        .then(function(r) { return r.json(); })
-        .then(function(ids) {
-          if (!ids || ids.length === 0) { showEmpty(); return; }
-          fetch(API_BASE + '/camps?limit=500')
-            .then(function(r) { return r.json(); })
-            .then(function(camps) {
-              var idSet = new Set(ids.map(String));
-              favoriteCamps = camps.filter(function(c) { return idSet.has(String(c.id)); });
-              if (favoriteCamps.length === 0) { showEmpty(); return; }
-              initWeek();
-              render();
-              document.getElementById('loadingState').style.display = 'none';
-              document.getElementById('planLayout').style.display = 'grid';
-            });
+        .then(function(r) { return r.ok ? r.json() : []; })
+        .then(function(favs) {
+          if (!favs || favs.length === 0) { showEmpty(); return; }
+          favoriteCamps = favs; // each item is one scheduled session/entry
+          initWeek();
+          render();
+          document.getElementById('loadingState').style.display = 'none';
+          document.getElementById('planLayout').style.display = 'grid';
         })
         .catch(function() { showEmpty(); });
     }
@@ -365,6 +361,7 @@
               tagHtml +
             '</div>' +
             '<div style="font-size:0.82rem;color:#64748b;margin-bottom:0.3rem;">' + esc(c.organization || '') + '</div>' +
+            (c.session_label ? '<div style="font-size:0.8rem;font-weight:600;color:#1a5f4a;margin-bottom:0.3rem;">&#128197; ' + esc(c.session_label) + '</div>' : '') +
             '<div style="font-size:0.82rem;color:#475569;display:flex;flex-wrap:wrap;gap:0.75rem;">' +
               (dateRange ? '<span>&#128197; ' + dateRange + '</span>' : '') +
               (timeStr ? '<span>&#128344; ' + timeStr + '</span>' : '') +
@@ -375,7 +372,7 @@
           '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.4rem;flex-shrink:0;">' +
             '<span style="font-size:1rem;font-weight:700;color:#1e293b;">' + fmtMoney(c.price_per_week) + ' <span style="font-size:0.75rem;font-weight:400;color:#64748b;">/wk</span></span>' +
             (c.registration_link ? '<a href="' + esc(c.registration_link) + '" target="_blank" rel="noopener" style="font-size:0.82rem;color:#1a5f4a;text-decoration:underline;">Register &rarr;</a>' : '') +
-            '<button onclick="removeCamp(' + c.id + ')" style="background:none;border:none;color:#94a3b8;font-size:0.82rem;cursor:pointer;padding:0;margin-top:0.25rem;">&times; Remove</button>' +
+            '<button onclick="removeCamp(' + c.fav_id + ')" style="background:none;border:none;color:#94a3b8;font-size:0.82rem;cursor:pointer;padding:0;margin-top:0.25rem;">&times; Remove</button>' +
           '</div>';
         container.appendChild(card);
       });
@@ -387,13 +384,13 @@
       var legendHtml = '';
       favoriteCamps.forEach(function(c, idx) {
         var col = COLORS[idx % COLORS.length];
-        total += (c.price_per_week || 0);
+        total += parseFloat(c.price_per_week || c.price || 0);
         var shortName = c.name.length > 26 ? c.name.substring(0, 24) + '...' : c.name;
         costHtml +=
           '<div class="cost-row">' +
             '<span class="cost-dot" style="background:' + col.dot + '"></span>' +
             '<span class="cost-label">' + esc(shortName) + '</span>' +
-            '<span class="cost-value">' + fmtMoney(c.price_per_week) + '/wk</span>' +
+            '<span class="cost-value">' + fmtMoney(parseFloat(c.price_per_week || c.price || 0)) + '/wk</span>' +
           '</div>';
         legendHtml +=
           '<div class="legend-row">' +
@@ -409,10 +406,10 @@
         '<p style="color:#94a3b8;font-size:0.9rem;margin:0;">No camps saved.</p>';
     }
 
-    function removeCamp(id) {
-      fetch(API_BASE + '/favorites/' + getUserUuid() + '/' + id, { method: 'DELETE' })
+    function removeCamp(favId) {
+      fetch(API_BASE + '/favorites/' + getUserUuid() + '/' + favId, { method: 'DELETE' })
         .then(function() {
-          favoriteCamps = favoriteCamps.filter(function(c) { return c.id !== id; });
+          favoriteCamps = favoriteCamps.filter(function(c) { return c.fav_id !== favId; });
           if (favoriteCamps.length === 0) { showEmpty(); return; }
           render();
         });
@@ -421,7 +418,7 @@
     function clearAll() {
       if (!confirm('Remove all saved camps from your plan?')) return;
       var promises = favoriteCamps.map(function(c) {
-        return fetch(API_BASE + '/favorites/' + getUserUuid() + '/' + c.id, { method: 'DELETE' });
+        return fetch(API_BASE + '/favorites/' + getUserUuid() + '/' + c.fav_id, { method: 'DELETE' });
       });
       Promise.all(promises).then(function() { favoriteCamps = []; showEmpty(); });
     }
