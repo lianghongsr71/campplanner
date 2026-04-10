@@ -81,8 +81,11 @@ class FavoriteAdd(BaseModel):
 # ── Auth ─────────────────────────────────────────────────────────────────────
 
 def require_admin(x_admin_key: Optional[str] = Header(None, alias="X-Admin-Key")):
-    # Auth temporarily disabled - re-enable when ADMIN_API_KEY is configured
-    pass
+    key = os.environ.get("ADMIN_API_KEY", "").strip()
+    if not key:
+        raise HTTPException(503, "ADMIN_API_KEY is not configured on the server")
+    if x_admin_key != key:
+        raise HTTPException(401, "Invalid or missing admin key")
 
 # ── Middleware ────────────────────────────────────────────────────────────────
 

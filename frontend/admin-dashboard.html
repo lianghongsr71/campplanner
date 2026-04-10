@@ -627,8 +627,17 @@
       document.getElementById('loginGate').classList.remove('hidden');
     };
 
-    /* Auth temporarily disabled — skip login gate */
-    unlockDashboard('');
+    /* Auto-login if key already saved in session */
+    (function () {
+      var saved = getAdminKey();
+      if (!saved) return;
+      fetch(API_BASE + '/admin/ping', { headers: { 'X-Admin-Key': saved } })
+        .then(function (res) {
+          if (res.ok) { unlockDashboard(saved); }
+          else { sessionStorage.removeItem(KEY_STORAGE); }
+        })
+        .catch(function () { /* stay on login gate */ });
+    })();
 
     /* ── Modal helpers ── */
     function openModal(title) {
